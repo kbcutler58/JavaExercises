@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><testrun name="DictionaryLLTester" project="MOOCTextEditor" tests="3" started="3" failures="0" errors="0" ignored="0">
+  <testsuite name="spelling.DictionaryLLTester" time="2.941">
+    <testcase name="addWord" classname="spelling.DictionaryLLTester" time="1.041"/>
+    <testcase name="testSize" classname="spelling.DictionaryLLTester" time="0.939"/>
+    <testcase name="testIsWord" classname="spelling.DictionaryLLTester" time="0.961"/>
+  </testsuite>
+</testrun>

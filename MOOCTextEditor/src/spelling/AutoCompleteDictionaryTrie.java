@@ -3,6 +3,7 @@ package spelling;
 import java.util.List;
 import java.util.Set;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -39,8 +40,78 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	 */
 	public boolean addWord(String word)
 	{
-	    //TODO: Implement this method.
-	    return false;
+		word = word.toLowerCase();
+		TrieNode nextNode = null;
+		TrieNode prevNode = null;
+		for (int i = 0; i<word.length();i++)
+		{
+			if (i == 0 && word.length() > 1)
+			{
+				nextNode = root.insert(word.charAt(i));
+				//System.out.println(nextNode);
+				if (nextNode == null)
+				{ 
+					nextNode = root.getChild(word.charAt(i));
+				}
+				//System.out.println(nextNode == null);
+			}
+			else if (i == 0 && word.length() == 1)
+			{
+				nextNode = root.insert(word.charAt(i));
+				if (nextNode == null)
+				{ 
+					nextNode = root.getChild(word.charAt(i));
+					if (nextNode.endsWord())
+						return false;
+					else
+						size++;
+						nextNode.setEndsWord(true);
+						return true;
+						
+				}
+				else
+				{
+					size++;
+					nextNode.setEndsWord(true);
+					return true;
+				}
+			}			
+			
+			else if (i == word.length()-1)
+			{
+				TrieNode finalNode = nextNode.insert(word.charAt(i));
+				if (finalNode==null)
+				{
+					finalNode = nextNode.getChild(word.charAt(i));
+					if (finalNode.endsWord())
+					{
+						return false;
+					}
+					else
+					{
+						size++;
+						finalNode.setEndsWord(true);
+						return true;
+					}
+				}	
+				else{
+					finalNode.setEndsWord(true);
+					size++;
+					return true;
+				}
+			}
+			else
+			{
+				prevNode = nextNode;
+				nextNode = nextNode.insert(word.charAt(i));
+				if (nextNode==null)
+				{
+					nextNode = prevNode.getChild(word.charAt(i));
+				}
+				
+			}
+		}
+		return false;
 	}
 	
 	/** 
@@ -49,8 +120,9 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	 */
 	public int size()
 	{
+		
 	    //TODO: Implement this method
-	    return 0;
+	    return size;
 	}
 	
 	
@@ -59,7 +131,59 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	@Override
 	public boolean isWord(String s) 
 	{
-	    // TODO: Implement this method
+		String word = s.toLowerCase();
+		TrieNode nextNode = null;
+		for (int i = 0; i<word.length();i++)
+		{
+			if (i == 0 & word.length() > 1)
+			{
+				// check if word.charAt(i) is valid key
+				Set<Character> testSet = root.getValidNextCharacters();
+				if(testSet.contains(word.charAt(i)))
+					nextNode = root.getChild(word.charAt(i));
+				else
+					return false;
+			}
+			else if (i == 0 & word.length() == 1) 
+			{
+				// check if word.charAt(i) is valid key
+				Set<Character> testSet = root.getValidNextCharacters();
+				if(testSet.contains(word.charAt(i)))
+				{
+					nextNode = root.getChild(word.charAt(i));
+					if (nextNode.endsWord())
+						return true;
+					else
+						return false;
+				}
+				else
+					return false;
+			}
+			else if (i == word.length()-1)
+			{
+				Set<Character> testSet = nextNode.getValidNextCharacters();
+				if(testSet.contains(word.charAt(i)))
+				{
+					TrieNode finalNode = nextNode.getChild(word.charAt(i));
+					if (finalNode.endsWord())
+						return true;
+					else
+						return false;
+				}
+				else
+					return false;
+			}
+			else
+			{
+				// check if word.charAt(i) is valid key
+				Set<Character> testSet = nextNode.getValidNextCharacters();
+				if(testSet.contains(word.charAt(i)))
+					nextNode = nextNode.getChild(word.charAt(i));
+				else
+					return false;			}
+		}
+
+		// TODO: Implement this method
 		return false;
 	}
 
@@ -86,7 +210,101 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
      */@Override
      public List<String> predictCompletions(String prefix, int numCompletions) 
      {
+
     	 // TODO: Implement this method
+    	 List<String> predictedWords2 =  Collections.emptyList();
+    	 if (numCompletions < 1) return predictedWords2; 
+    	 List<String> predictedWords = new LinkedList<String>(); 
+    	 String word = prefix.toLowerCase();
+    	 TrieNode stemNode = null;
+    	 TrieNode nextNode = null;
+    	 boolean isFound = true;
+//    	 if (word.length() < 1) isFound = false;
+    	 for (int i = 0; i<word.length();i++)
+ 		{
+ 			if (i == 0 & word.length() > 1)
+ 			{
+ 				// check if word.charAt(i) is valid key
+ 				Set<Character> testSet = root.getValidNextCharacters();
+ 				if(testSet.contains(word.charAt(i)))
+ 					nextNode = root.getChild(word.charAt(i));
+ 				else
+ 					isFound = false;
+ 			}
+ 			else if (i == 0 & word.length() == 1 & isFound == true) 
+ 			{
+ 				// check if word.charAt(i) is valid key
+ 				Set<Character> testSet = root.getValidNextCharacters();
+ 				System.out.println(testSet);
+ 				if(testSet.contains(word.charAt(i)))
+ 				{
+ 					stemNode = root.getChild(word.charAt(i));
+ 				}
+ 				else
+ 				{
+ 					isFound = false;
+ 				}
+ 			}
+ 			else if (i == word.length()-1 & isFound == true)
+ 			{
+ 				Set<Character> testSet = nextNode.getValidNextCharacters();
+ 				if(testSet.contains(word.charAt(i)))
+ 				{
+ 					stemNode = nextNode.getChild(word.charAt(i));
+ 				}
+ 				else
+ 					isFound = false;
+ 			}
+ 			else if (isFound == true)
+ 			{
+ 				// check if word.charAt(i) is valid key
+ 				Set<Character> testSet = nextNode.getValidNextCharacters();
+ 				if(testSet.contains(word.charAt(i)))
+ 					nextNode = nextNode.getChild(word.charAt(i));
+ 				else
+ 					isFound = false;	
+ 			}
+ 		}
+    	 
+ 		// Find the stem add to queList
+    	 // Create empty suggestions list
+    	 //System.out.println(isFound);
+    	 if (!isFound) 
+    		 {
+    		 return predictedWords;
+    		 }
+    	 
+    	 if (word.equals(""))
+    	 {
+    		 //Set<Character> testSet = root.getValidNextCharacters(); 
+    		 stemNode = root;
+    	 }
+    	 
+    	 LinkedList<TrieNode> queList = new LinkedList<TrieNode>();
+    	 queList.add(stemNode);
+    	 while( queList.size() > 0 && predictedWords.size() < numCompletions)
+    	 {
+    		 TrieNode testNode = queList.removeFirst();
+    		 Set<Character> testSet = testNode.getValidNextCharacters();
+    		 if (testNode.endsWord())
+    			 {
+    			 predictedWords.add(testNode.getText());
+    			 }
+    		// System.out.println(tes);
+    		 //System.out.println(testSet);
+
+    		 for (char letter : testSet)
+    		 {
+    			 queList.addLast(testNode.getChild(letter));
+    		 }
+       	 }
+    	 
+    	 // List all valid characters
+    	 // While queList size > 0 & size predictedWords < numCompletions
+    	 // remove first node in queList
+    	 // if word, add to completions
+    	 // add valid characters to end of list
+    	 
     	 // This method should implement the following algorithm:
     	 // 1. Find the stem in the trie.  If the stem does not appear in the trie, return an
     	 //    empty list
@@ -100,8 +318,8 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
     	 //       If it is a word, add it to the completions list
     	 //       Add all of its child nodes to the back of the queue
     	 // Return the list of completions
-    	 
-         return null;
+    	 // System.out.println(predictedWords);
+         return predictedWords;
      }
 
  	// For debugging
