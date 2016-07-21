@@ -42,31 +42,28 @@ public class WPTree implements WordPath {
 	// see method description in WordPath interface
 	public List<String> findPath(String word1, String word2) 
 	{
-		if(!nw.dict.isWord(word2)) {return null;}
 		// initial variables
 		List<WPTreeNode> queue = new LinkedList<WPTreeNode>();     // String to explore
 		HashSet<WPTreeNode> visited = new HashSet<WPTreeNode>();   // to avoid exploring the same  
-		HashSet<String> visitedString = new HashSet<String>();
+		
 		root = new WPTreeNode(word1,null);
 		// insert first node
 		//queue.add(root);
 		visited.add(root);
 		queue.add(root);
-		visitedString.add(word1);
 		Boolean wordFound = false;
 		while(queue.size() > 0 && !wordFound)
 		{
 			WPTreeNode curr = queue.remove(0);
-			List<String> sugList = nw.distanceOne(curr.getWord(),true);
+			List<String> sugList = nw.suggestions(curr.getWord(),100);
 			
 			for (String sug:sugList)
 			{
-				if(!visitedString.contains(sug))
+				if(!visited.contains(sug))
 				{
 					WPTreeNode tempNode = curr.addChild(sug);
 					queue.add(tempNode);
 					visited.add(tempNode);
-					visitedString.add(sug);
 					if ( sug.equals(word2)) {
 						wordFound = true;
 						List<String> rootList = tempNode.buildPathToRoot();

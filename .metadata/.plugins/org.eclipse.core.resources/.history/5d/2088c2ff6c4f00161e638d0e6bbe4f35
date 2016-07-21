@@ -171,7 +171,7 @@ public class NearbyWords implements SpellingSuggest {
 	   
 
 	   word = "kangaro";
-	   List<String> suggest = w.suggestions(word, 3);
+	   List<String> suggest = w.suggestions(word, 1);
 	   System.out.println("Spelling Suggestions for \""+word+"\" are:");
 	   System.out.println(suggest);
 	   
