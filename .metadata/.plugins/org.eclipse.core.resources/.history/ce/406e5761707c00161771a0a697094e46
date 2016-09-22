@@ -1,0 +1,22 @@
+package roadgraph;
+
+import java.util.LinkedList;
+
+import geography.GeographicPoint;
+
+public class MapNode {
+	GeographicPoint nodeLocation;
+	LinkedList<Integer> edgeList;
+	LinkedList<String> edgeName;
+	LinkedList<String> edgeType;
+	LinkedList<Integer> edgeLength;
+	
+	public MapNode(GeographicPoint location)
+	{
+		this.nodeLocation = location;
+		this.edgeList = new LinkedList<Integer>();
+		this.edgeType = new LinkedList<String>();
+		this.edgeName = new LinkedList<String>();
+		this.edgeLength = new LinkedList<Integer>();
+	}
+}

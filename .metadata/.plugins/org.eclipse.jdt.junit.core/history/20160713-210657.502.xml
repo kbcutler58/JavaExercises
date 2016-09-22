@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><testrun name="AutoCompleteDictionaryTrieTester" project="MOOCTextEditor" tests="4" started="1" failures="0" errors="0" ignored="0">
-  <testsuite name="spelling.AutoCompleteDictionaryTrieTester" incomplete="true">
-    <testcase name="testAddWord" classname="spelling.AutoCompleteDictionaryTrieTester" incomplete="true"/>
-    <testcase name="testSize" classname="spelling.AutoCompleteDictionaryTrieTester" incomplete="true"/>
-    <testcase name="testIsWord" classname="spelling.AutoCompleteDictionaryTrieTester" incomplete="true"/>
-    <testcase name="testPredictCompletions" classname="spelling.AutoCompleteDictionaryTrieTester" incomplete="true"/>
-  </testsuite>
-</testrun>

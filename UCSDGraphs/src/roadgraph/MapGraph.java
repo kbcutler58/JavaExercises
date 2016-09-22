@@ -8,6 +8,9 @@
 package roadgraph;
 
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -24,13 +27,19 @@ import util.GraphLoader;
  */
 public class MapGraph {
 	//TODO: Add your member variables here in WEEK 2
+	// variables needed
+	// HashMap of MapNodes
+	HashMap<GeographicPoint,MapNode> NodeMap;
 	
+	// List of MapEdges 
 	
 	/** 
 	 * Create a new empty MapGraph 
 	 */
 	public MapGraph()
 	{
+		// initialize structure to hold vertices of MapNode called by GeographicPoint
+		NodeMap = new HashMap<GeographicPoint,MapNode>();
 		// TODO: Implement in this constructor in WEEK 2
 	}
 	
@@ -40,8 +49,9 @@ public class MapGraph {
 	 */
 	public int getNumVertices()
 	{
+		// grab size of Node list
+		return NodeMap.size();
 		//TODO: Implement this method in WEEK 2
-		return 0;
 	}
 	
 	/**
@@ -50,8 +60,14 @@ public class MapGraph {
 	 */
 	public Set<GeographicPoint> getVertices()
 	{
+		// create set from all vertices by looping through points
+		Set<GeographicPoint> PointSet = new HashSet<GeographicPoint>();
+		for (GeographicPoint point : NodeMap.keySet() )
+		{
+			PointSet.add(point);
+		}
 		//TODO: Implement this method in WEEK 2
-		return null;
+		return PointSet;
 	}
 	
 	/**
@@ -60,8 +76,15 @@ public class MapGraph {
 	 */
 	public int getNumEdges()
 	{
+		// count edges by for:each loops through Nodes and adds edges
+		int counter = 0;
+		for (GeographicPoint point: NodeMap.keySet() )
+		{
+			MapNode tempNode = NodeMap.get(point);
+			counter += tempNode.mapEdges.size(); // add edges sum to counter
+		}
 		//TODO: Implement this method in WEEK 2
-		return 0;
+		return counter;
 	}
 
 	
@@ -75,8 +98,15 @@ public class MapGraph {
 	 */
 	public boolean addVertex(GeographicPoint location)
 	{
+		// if location is already used do not add
+		if (NodeMap.containsKey(location))
+		{
+			return false;
+		}
+		// if location is new then add MapNode
+		NodeMap.put( location, new MapNode(location));
 		// TODO: Implement this method in WEEK 2
-		return false;
+		return true;
 	}
 	
 	/**
@@ -92,10 +122,18 @@ public class MapGraph {
 	 *   or if the length is less than 0.
 	 */
 	public void addEdge(GeographicPoint from, GeographicPoint to, String roadName,
-			String roadType, double length) throws IllegalArgumentException {
-
-		//TODO: Implement this method in WEEK 2
-		
+			String roadType, double length) throws IllegalArgumentException 
+	{
+		// check for null inputs / not on graph and less than 0 length and throw error
+		if (NodeMap.get(from) == null || NodeMap.get(to)==null || to == null || from == null || roadName == null || roadType == null || length < 0)
+		{
+			throw new IllegalArgumentException("Points not on graph");
+		}
+		// grab start of edge node
+		MapNode tempNode = NodeMap.get(from);
+		// add edge to node
+		tempNode.AddEdge(from, to, roadName, roadType, length);
+		//TODO: Implement this method in WEEK 2		
 	}
 	
 
@@ -123,11 +161,59 @@ public class MapGraph {
 	public List<GeographicPoint> bfs(GeographicPoint start, 
 			 					     GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
-		// TODO: Implement this method in WEEK 2
+		// Queue for searching, HashSet for visited, HashMap for Path Output
+		// searchQue for adding nodes to search
+		// searchedNodes for storing searched map nodes
+		// parentMap for storing relationships between nodes
+		// outputPath list for outputting reverse of tempPath in output
+		// tempPath for adding list of locations from search output
 		
-		// Hook for visualization.  See writeup.
-		//nodeSearched.accept(next.getLocation());
-
+		List<GeographicPoint> searchQue = new LinkedList<GeographicPoint>();
+		Set<MapNode> searchedNodes = new HashSet<MapNode>();
+		HashMap<MapNode,MapNode> parentMap = new HashMap<MapNode,MapNode>();
+		List<GeographicPoint> outputPath = new LinkedList<GeographicPoint>();
+		List<GeographicPoint> tempPath = new LinkedList<GeographicPoint>();
+		
+		// Add start point and add start to visited nodes
+		searchQue.add(start);
+		searchedNodes.add(NodeMap.get(start));
+		if (start.equals(goal)) // check to see if goal == start
+		{
+			List<GeographicPoint> tempList = new LinkedList<GeographicPoint>();
+			tempList.add(start);
+			return tempList; // return start point only if goal == start
+		}
+		while(searchQue.size() > 0 ) // keep searching while searchable nodes are still being added
+		{	
+			GeographicPoint current = searchQue.remove(0); // remove from front of list
+			if (current.equals(goal)) // check current for goal
+				{
+				tempPath.add(current); // add current location to start of outputList
+				MapNode parentNode = parentMap.get(NodeMap.get(current)); // find parent of current location
+				while (parentNode.nodeLocation.equals(start) == false) // check to see if 2 length output
+				{
+				tempPath.add(parentNode.nodeLocation); // add location of intermediate node
+				MapNode parentNode2 = parentMap.get(parentNode); // find parent of intermediate node
+				parentNode = parentNode2; // store parent as new node
+				}	
+				tempPath.add(start); // start root to end of outputPath
+				for (int i = tempPath.size(); i > 0 ; i-- ) // reverse path because added from goal to start
+				{
+					outputPath.add(tempPath.get(i-1));
+				}
+				return outputPath;
+				}
+			nodeSearched.accept(current);	// used for visualization
+			for (MapEdge edge : NodeMap.get(current).mapEdges) // go through all edges on node
+			{	
+				if(searchedNodes.contains(edge.getEnd())==false) //check to see if node at edge is already searched
+				{
+					searchedNodes.add(NodeMap.get(edge.getEnd())); // add node at edge to searched nodes
+					parentMap.put(NodeMap.get(edge.getEnd()), NodeMap.get(current)); //add node to map of parent nodes
+					searchQue.add(edge.getEnd()); //add node to searchQue
+				}
+			}
+		}
 		return null;
 	}
 	

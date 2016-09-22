@@ -1,0 +1,28 @@
+package roadgraph;
+
+import java.util.LinkedList;
+
+import geography.GeographicPoint;
+
+public class MapNode {
+	GeographicPoint nodeLocation;
+	LinkedList<MapEdge> mapEdges; 
+
+	
+	public MapNode(GeographicPoint location)
+	{
+		this.nodeLocation = location;
+		this.mapEdges = new LinkedList<MapEdge>();
+	}
+	
+	public boolean AddEdge(GeographicPoint startLocation, GeographicPoint endLocation,
+			String roadName, String roadType, double roadLength)
+	{
+		if (roadName == null || roadType == null || roadLength <= 0)
+		{
+			return false;
+		}
+		mapEdges.add(new MapEdge(startLocation,endLocation,roadName,roadType,roadLength));
+		return true;
+	}
+}

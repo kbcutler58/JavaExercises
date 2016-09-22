@@ -95,8 +95,30 @@ public class GraphAdjList extends Graph {
 	 * @return List<Integer> a list of indices of vertices.  
 	 */		
 	 public List<Integer> getDistance2(int v) {
+		 List<Integer> NeighborList = new ArrayList<Integer>();
+		 
+			List<Integer> NeighborList1 = getNeighbors(v);
+			
+			for (Integer vert1 : NeighborList1){
+				List<Integer> NeighborList3 = getNeighbors(vert1); 
+				for (Integer vert2 : NeighborList3){
+					//if (!NeighborList.contains(vert2)) NeighborList.add(vert2);
+					NeighborList.add(vert2);
+				}
+			}
+//			List<Integer> NeighborList2 = getInNeighbors(v);
+//			for (Integer vert3 : NeighborList2){
+//				List<Integer> NeighborList4 = getInNeighbors(vert3); 
+//				for (Integer vert4 : NeighborList4){
+//					if (!NeighborList.contains(vert4)) NeighborList.add(vert4);
+//				}
+//			}
+			
+			
+			// Distance 2 away - find all 1 neighboors (getNeighbors, getInNeighbors)
+			// Distance 2 away - find all 1 neighboors from that list
 		 // XXX: Implement this method in week 1
-		 return null;
+		 return NeighborList;
 	}
 	
 	/**
